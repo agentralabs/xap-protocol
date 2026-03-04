@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acp.agentralabs.tech/schemas/v0.1/verity-receipt.json",
+  "title": "VerityReceipt",
+  "description": "ACP v0.1 — In progress. Placeholder schema for deterministic decision provenance and replay.",
+  "type": "object",
+  "required": [
+    "acp_version",
+    "verity_id",
+    "decision_type",
+    "created_at",
+    "decision_signature"
+  ],
+  "properties": {
+    "acp_version": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "verity_id": {
+      "type": "string",
+      "description": "Globally unique VerityReceipt identifier."
+    },
+    "decision_type": {
+      "type": "string",
+      "description": "Type of decision captured for replay."
+    },
+    "input_state_hash": {
+      "type": "string",
+      "description": "Hash of the decision input state."
+    },
+    "decision_trace": {
+      "type": "object",
+      "description": "Reasoning and policy trace used to make the decision."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decision_signature": {
+      "type": "string",
+      "description": "Ed25519 signature over canonical decision payload."
+    }
+  }
+}

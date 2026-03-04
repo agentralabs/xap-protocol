@@ -3,7 +3,7 @@
 **The open economic protocol for autonomous agents.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-white.svg)](https://opensource.org/licenses/MIT)
-[![Status: Draft v0.1](https://img.shields.io/badge/Status-Draft%20v0.1-yellow.svg)]()
+[![Status: Draft v0.1](https://img.shields.io/badge/Status-Draft%20v0.1-yellow.svg)](#versioning)
 [![Maintained by: Agentra Labs](https://img.shields.io/badge/Maintained%20by-Agentra%20Labs-blue.svg)](https://www.agentralabs.tech)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2.svg)](https://discord.gg/agentralabs)
 
@@ -110,15 +110,15 @@ ExecutionReceipt issued + VerityReceipt captured
 
 ## Schema Reference
 
-All five ACP primitive schemas live in `/schemas`. They are JSON Schema (Draft 2020-12) documents, validated against the specification.
+All five ACP primitive schemas live in `/acp/schemas`. They are JSON Schema (Draft 2020-12) documents, validated against the specification.
 
 | Schema | File | Status |
 |---|---|---|
-| `AgentIdentity` | [`/schemas/agent-identity.json`](/schemas/agent-identity.json) | ✅ v0.1 Draft |
-| `NegotiationContract` | [`/schemas/negotiation-contract.json`](/schemas/negotiation-contract.json) | ✅ v0.1 Draft |
-| `SettlementIntent` | [`/schemas/settlement-intent.json`](/schemas/settlement-intent.json) | ✅ v0.1 Draft |
-| `ExecutionReceipt` | [`/schemas/execution-receipt.json`](/schemas/execution-receipt.json) | ✅ v0.1 Draft |
-| `VerityReceipt` | [`/schemas/verity-receipt.json`](/schemas/verity-receipt.json) | 🔄 In Progress |
+| `AgentIdentity` | [`/acp/schemas/agent-identity.json`](/acp/schemas/agent-identity.json) | ✅ v0.1 Draft |
+| `NegotiationContract` | [`/acp/schemas/negotiation-contract.json`](/acp/schemas/negotiation-contract.json) | ✅ v0.1 Draft |
+| `SettlementIntent` | [`/acp/schemas/settlement-intent.json`](/acp/schemas/settlement-intent.json) | ✅ v0.1 Draft |
+| `ExecutionReceipt` | [`/acp/schemas/execution-receipt.json`](/acp/schemas/execution-receipt.json) | ✅ v0.1 Draft |
+| `VerityReceipt` | [`/acp/schemas/verity-receipt.json`](/acp/schemas/verity-receipt.json) | 🔄 In Progress |
 
 Each schema includes a working example showing a complete, valid object. Read the schema. You understand ACP.
 
@@ -246,7 +246,7 @@ Open a discussion with the label `verity-legal`.
 
 ### How To Contribute
 
-1. Read the schemas in `/schemas` first. They are the source of truth.
+1. Read the schemas in `/acp/schemas` first. They are the source of truth.
 2. Read the open discussions to understand what is already being debated.
 3. Open an issue or discussion before writing anything substantial.
 4. Use the correct label so it reaches the right people.
