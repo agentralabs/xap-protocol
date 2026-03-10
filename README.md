@@ -116,20 +116,13 @@ An agent evaluating a potential counterparty reads its AgentIdentity and sees: 1
 └────────────────────────┬────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────┐
-│              Verity Truth Engine                  │
+│                Truth Engine                      │
 │         (open source, Rust, MIT)                 │
-│                                                  │
-│   Canonical Kernel  │  Outcome States            │
-│   Hash Chains       │  Finality Classes          │
-│   Money Ledger      │  Evidence Ledger           │
 └────────────────────────┬────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────┐
 │              Settlement Engine                    │
 │                (Rust core)                        │
-│                                                  │
-│   Condition Verification  │  Split Cascade       │
-│   Idempotency Layer       │  Rollback Engine     │
 └────────────────────────┬────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────┐
