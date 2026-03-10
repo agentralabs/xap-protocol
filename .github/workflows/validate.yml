@@ -15,6 +15,6 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install jsonschema pytest
+        run: pip install jsonschema pytest cryptography
       - name: Run schema validation
         run: pytest xap/tests/ -v
