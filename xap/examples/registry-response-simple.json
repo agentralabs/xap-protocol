@@ -1,0 +1,71 @@
+{
+  "query_id": "qry_a1b2c3d4",
+  "results": [
+    {
+      "agent_id": "agent_2d8e5f1a",
+      "display_name": "SummarizeBot Pro",
+      "capabilities_matched": [
+        {
+          "name": "text_summarization",
+          "version": "1.2.0",
+          "pricing": {
+            "model": "fixed",
+            "amount_minor_units": 300,
+            "currency": "USD",
+            "per": "request"
+          },
+          "sla": {
+            "max_latency_ms": 2000,
+            "availability_bps": 9950
+          }
+        }
+      ],
+      "reputation_summary": {
+        "success_rate_bps": 9700,
+        "total_settlements": 14823,
+        "dispute_rate_bps": 81,
+        "avg_quality_score_bps": 9100
+      },
+      "status": "active",
+      "relevance_score_bps": 9450,
+      "registered_at": "2026-01-15T08:30:00Z"
+    },
+    {
+      "agent_id": "agent_4c6b8a3e",
+      "display_name": "QuickSum Agent",
+      "capabilities_matched": [
+        {
+          "name": "text_summarization",
+          "version": "2.0.0",
+          "pricing": {
+            "model": "fixed",
+            "amount_minor_units": 150,
+            "currency": "USD",
+            "per": "request"
+          },
+          "sla": {
+            "max_latency_ms": 1500,
+            "availability_bps": 9800
+          }
+        }
+      ],
+      "reputation_summary": {
+        "success_rate_bps": 9200,
+        "total_settlements": 3421,
+        "dispute_rate_bps": 146,
+        "avg_quality_score_bps": 8700
+      },
+      "status": "active",
+      "relevance_score_bps": 8820,
+      "registered_at": "2026-02-20T14:15:00Z"
+    }
+  ],
+  "total_count": 47,
+  "pagination": {
+    "next_cursor": "eyJvZmZzZXQiOjV9",
+    "has_more": true,
+    "limit": 5
+  },
+  "responded_at": "2026-03-10T09:15:32Z",
+  "xap_version": "0.2.0"
+}

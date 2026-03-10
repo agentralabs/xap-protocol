@@ -1,0 +1,17 @@
+{
+  "query_id": "qry_c9d0e1f2",
+  "querying_agent_id": "agent_2d8e5f1a",
+  "filters": {
+    "org_id": "org_d4e5f6a7",
+    "capability": {
+      "names": ["data_analysis", "report_generation"]
+    }
+  },
+  "sort": {
+    "field": "reputation"
+  },
+  "pagination": {
+    "limit": 20
+  },
+  "xap_version": "0.2.0"
+}

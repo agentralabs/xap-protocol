@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xap.agentralabs.tech/schemas/v0.2/registry-response.json",
+  "title": "RegistryResponse",
+  "description": "XAP v0.2 — Discovery response. Returns agent summaries matching a RegistryQuery.",
+  "type": "object",
+  "required": ["query_id", "results", "total_count", "pagination", "responded_at", "xap_version"],
+  "additionalProperties": false,
+  "properties": {
+    "query_id": {
+      "type": "string",
+      "pattern": "^qry_[a-f0-9]{8}$",
+      "description": "Echoes the query_id."
+    },
+    "results": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/AgentSummary" },
+      "description": "Array of agent summaries."
+    },
+    "total_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of matching agents."
+    },
+    "pagination": {
+      "$ref": "#/$defs/ResponsePagination"
+    },
+    "responded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the registry responded."
+    },
+    "xap_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Protocol version (semver)."
+    }
+  },
+  "$defs": {
+    "AgentSummary": {
+      "type": "object",
+      "required": [
+        "agent_id",
+        "capabilities_matched",
+        "reputation_summary",
+        "status",
+        "relevance_score_bps",
+        "registered_at"
+      ],
+      "additionalProperties": false,
+      "description": "Projection of AgentIdentity for discovery results.",
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "pattern": "^agent_[a-f0-9]{8}$",
+          "description": "Agent identifier."
+        },
+        "display_name": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Human-readable agent name."
+        },
+        "capabilities_matched": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/CapabilityMatch" },
+          "description": "Capabilities that matched the query."
+        },
+        "reputation_summary": {
+          "$ref": "#/$defs/ReputationSummary"
+        },
+        "org_id": {
+          "type": "string",
+          "pattern": "^org_[a-f0-9]{8}$",
+          "description": "Organization (if any)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "suspended"],
+          "description": "Agent status."
+        },
+        "relevance_score_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Composite relevance score for this query."
+        },
+        "registered_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the agent registered."
+        }
+      }
+    },
+    "CapabilityMatch": {
+      "type": "object",
+      "required": ["name", "version", "pricing", "sla"],
+      "additionalProperties": false,
+      "description": "A matched capability with pricing and SLA.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Capability name."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Capability version (semver)."
+        },
+        "pricing": {
+          "$ref": "#/$defs/CapabilityPricing"
+        },
+        "sla": {
+          "$ref": "#/$defs/CapabilitySla"
+        }
+      }
+    },
+    "CapabilityPricing": {
+      "type": "object",
+      "required": ["model", "amount_minor_units", "currency", "per"],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["fixed", "dynamic", "auction", "outcome_based"],
+          "description": "Pricing model."
+        },
+        "amount_minor_units": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Price in minor units."
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "Currency (ISO 4217)."
+        },
+        "per": {
+          "type": "string",
+          "description": "Unit (e.g., request, token, minute)."
+        }
+      }
+    },
+    "CapabilitySla": {
+      "type": "object",
+      "required": ["max_latency_ms", "availability_bps"],
+      "additionalProperties": false,
+      "properties": {
+        "max_latency_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Declared max latency."
+        },
+        "availability_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Declared availability."
+        }
+      }
+    },
+    "ReputationSummary": {
+      "type": "object",
+      "required": [
+        "success_rate_bps",
+        "total_settlements",
+        "dispute_rate_bps",
+        "avg_quality_score_bps"
+      ],
+      "additionalProperties": false,
+      "description": "Reputation snapshot.",
+      "properties": {
+        "success_rate_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Success rate in basis points."
+        },
+        "total_settlements": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total settlements completed."
+        },
+        "dispute_rate_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Dispute rate in basis points."
+        },
+        "avg_quality_score_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Average quality score in basis points."
+        }
+      }
+    },
+    "ResponsePagination": {
+      "type": "object",
+      "required": ["has_more", "limit"],
+      "additionalProperties": false,
+      "description": "Pagination metadata.",
+      "properties": {
+        "next_cursor": {
+          "type": "string",
+          "description": "Cursor for next page (absent if no more results)."
+        },
+        "has_more": {
+          "type": "boolean",
+          "description": "Whether more results exist."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Echoes the requested limit."
+        }
+      }
+    }
+  }
+}

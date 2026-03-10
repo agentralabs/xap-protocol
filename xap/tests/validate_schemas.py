@@ -33,6 +33,15 @@ SCHEMA_EXAMPLE_MAP = {
         "verity-simple-deterministic.json",
         "verity-complex-partial.json",
     ],
+    "registry-query.json": [
+        "registry-query-simple.json",
+        "registry-query-complex.json",
+        "registry-query-org.json",
+    ],
+    "registry-response.json": [
+        "registry-response-simple.json",
+        "registry-response-complex.json",
+    ],
 }
 
 

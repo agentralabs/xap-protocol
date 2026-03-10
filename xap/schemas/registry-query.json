@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xap.agentralabs.tech/schemas/v0.2/registry-query.json",
+  "title": "RegistryQuery",
+  "description": "XAP v0.2 — Discovery query interface. Defines how agents find other agents in the XAP ecosystem.",
+  "type": "object",
+  "required": ["query_id", "querying_agent_id", "filters", "xap_version"],
+  "additionalProperties": false,
+  "properties": {
+    "query_id": {
+      "type": "string",
+      "pattern": "^qry_[a-f0-9]{8}$",
+      "description": "Unique query identifier."
+    },
+    "querying_agent_id": {
+      "type": "string",
+      "pattern": "^agent_[a-f0-9]{8}$",
+      "description": "Who is searching."
+    },
+    "filters": {
+      "$ref": "#/$defs/Filters"
+    },
+    "sort": {
+      "$ref": "#/$defs/Sort"
+    },
+    "pagination": {
+      "$ref": "#/$defs/Pagination"
+    },
+    "xap_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Protocol version (semver)."
+    }
+  },
+  "$defs": {
+    "Filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Query filters. All optional. Multiple filters are AND-combined.",
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/CapabilityFilter"
+        },
+        "pricing": {
+          "$ref": "#/$defs/PricingFilter"
+        },
+        "reputation": {
+          "$ref": "#/$defs/ReputationFilter"
+        },
+        "sla": {
+          "$ref": "#/$defs/SlaFilter"
+        },
+        "org_id": {
+          "type": "string",
+          "pattern": "^org_[a-f0-9]{8}$",
+          "description": "Filter to agents in a specific organization."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "suspended"],
+          "description": "Filter by agent status (default: active only)."
+        },
+        "exclude_agents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^agent_[a-f0-9]{8}$"
+          },
+          "description": "Exclude specific agents from results."
+        }
+      }
+    },
+    "CapabilityFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Filter by capability.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Exact match on capability name."
+        },
+        "names": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Match any of these capability names (OR)."
+        },
+        "version_min": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Minimum capability version (semver)."
+        }
+      }
+    },
+    "PricingFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Filter by price range.",
+      "properties": {
+        "max_amount_minor_units": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum price in minor units."
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "Currency filter (ISO 4217)."
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["fixed", "dynamic", "auction", "outcome_based"]
+          },
+          "description": "Acceptable pricing models."
+        }
+      }
+    },
+    "ReputationFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Filter by reputation.",
+      "properties": {
+        "min_success_rate_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Minimum success rate in basis points."
+        },
+        "min_total_settlements": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum number of completed settlements."
+        },
+        "max_dispute_rate_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Maximum dispute rate in basis points."
+        }
+      }
+    },
+    "SlaFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Filter by SLA guarantees.",
+      "properties": {
+        "max_latency_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum acceptable latency."
+        },
+        "min_availability_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Minimum availability in basis points (9950 = 99.50%)."
+        }
+      }
+    },
+    "Sort": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How to rank results.",
+      "properties": {
+        "field": {
+          "type": "string",
+          "enum": ["relevance", "price_asc", "price_desc", "reputation", "latency", "availability", "settlements_count"],
+          "description": "Sort field (default: relevance)."
+        },
+        "weights": {
+          "$ref": "#/$defs/SortWeights"
+        }
+      }
+    },
+    "SortWeights": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Custom weights for relevance scoring. Must sum to exactly 10000 (runtime validation).",
+      "properties": {
+        "reputation_weight_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Weight for reputation in composite score (default: 3000)."
+        },
+        "price_weight_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Weight for price competitiveness (default: 2500)."
+        },
+        "latency_weight_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Weight for latency (default: 2500)."
+        },
+        "availability_weight_bps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Weight for availability (default: 2000)."
+        }
+      }
+    },
+    "Pagination": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Cursor-based pagination.",
+      "properties": {
+        "cursor": {
+          "type": "string",
+          "description": "Opaque cursor from previous response (omit for first page)."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Results per page (default: 20)."
+        }
+      }
+    }
+  }
+}

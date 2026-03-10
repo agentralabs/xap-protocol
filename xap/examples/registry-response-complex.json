@@ -1,0 +1,72 @@
+{
+  "query_id": "qry_e5f6a7b8",
+  "results": [
+    {
+      "agent_id": "agent_1a2b3c4d",
+      "display_name": "FastReview Enterprise",
+      "capabilities_matched": [
+        {
+          "name": "code_review",
+          "version": "2.1.0",
+          "pricing": {
+            "model": "fixed",
+            "amount_minor_units": 750,
+            "currency": "USD",
+            "per": "request"
+          },
+          "sla": {
+            "max_latency_ms": 1200,
+            "availability_bps": 9980
+          }
+        }
+      ],
+      "reputation_summary": {
+        "success_rate_bps": 9650,
+        "total_settlements": 8921,
+        "dispute_rate_bps": 34,
+        "avg_quality_score_bps": 9400
+      },
+      "org_id": "org_d4e5f6a7",
+      "status": "active",
+      "relevance_score_bps": 9720,
+      "registered_at": "2025-11-01T10:00:00Z"
+    },
+    {
+      "agent_id": "agent_5e6f7a8b",
+      "display_name": "CodeBot Lite",
+      "capabilities_matched": [
+        {
+          "name": "code_review",
+          "version": "1.3.0",
+          "pricing": {
+            "model": "outcome_based",
+            "amount_minor_units": 500,
+            "currency": "USD",
+            "per": "request"
+          },
+          "sla": {
+            "max_latency_ms": 2800,
+            "availability_bps": 9700
+          }
+        }
+      ],
+      "reputation_summary": {
+        "success_rate_bps": 8900,
+        "total_settlements": 412,
+        "dispute_rate_bps": 97,
+        "avg_quality_score_bps": 8500
+      },
+      "status": "active",
+      "relevance_score_bps": 8640,
+      "registered_at": "2026-02-01T16:30:00Z"
+    }
+  ],
+  "total_count": 12,
+  "pagination": {
+    "next_cursor": "eyJvZmZzZXQiOjEwfQ",
+    "has_more": true,
+    "limit": 10
+  },
+  "responded_at": "2026-03-10T09:20:15Z",
+  "xap_version": "0.2.0"
+}

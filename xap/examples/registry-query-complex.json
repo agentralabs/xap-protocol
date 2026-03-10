@@ -1,0 +1,37 @@
+{
+  "query_id": "qry_e5f6a7b8",
+  "querying_agent_id": "agent_9c4b3e7d",
+  "filters": {
+    "capability": {
+      "name": "code_review",
+      "version_min": "1.0.0"
+    },
+    "pricing": {
+      "max_amount_minor_units": 1000,
+      "currency": "USD",
+      "models": ["fixed", "outcome_based"]
+    },
+    "reputation": {
+      "min_success_rate_bps": 8500,
+      "min_total_settlements": 100
+    },
+    "sla": {
+      "max_latency_ms": 5000,
+      "min_availability_bps": 9500
+    },
+    "exclude_agents": ["agent_9c4b3e7d"]
+  },
+  "sort": {
+    "field": "relevance",
+    "weights": {
+      "reputation_weight_bps": 2000,
+      "price_weight_bps": 2000,
+      "latency_weight_bps": 4000,
+      "availability_weight_bps": 2000
+    }
+  },
+  "pagination": {
+    "limit": 10
+  },
+  "xap_version": "0.2.0"
+}
