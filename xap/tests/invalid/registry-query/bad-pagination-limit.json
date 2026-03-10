@@ -1,0 +1,7 @@
+{
+  "query_id": "qry_a1b2c3d4",
+  "querying_agent_id": "agent_7f3a9b2c",
+  "filters": {"capability": {"name": "text_summarization"}},
+  "pagination": {"limit": 200},
+  "xap_version": "0.2.0"
+}

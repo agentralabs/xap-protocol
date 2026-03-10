@@ -1,0 +1,12 @@
+{
+  "agent_id": "agent_7f3a9b2c",
+  "key_version": 1,
+  "key_status": "active",
+  "capabilities": [{"name": "text_summarization", "version": "1.0.0", "description": "Summarizes text", "pricing": {"model": "fixed", "amount_minor_units": 300, "currency": "USD", "per": "request"}, "sla": {"max_latency_ms": 3000, "availability_bps": 9900, "min_quality_score_bps": 8500}}],
+  "reputation": {"total_settlements": 0, "success_rate_bps": 0, "disputes": 0, "dispute_resolution_rate_bps": 0, "last_updated": "2026-03-09T12:00:00Z"},
+  "xap_version": "0.2.0",
+  "status": "active",
+  "registered_at": "2026-03-09T12:00:00Z",
+  "last_active_at": "2026-03-09T12:00:00Z",
+  "signature": "ed25519:c2lnbmF0dXJlX2V4YW1wbGVfYmFzZTY0X2VuY29kZWQ="
+}

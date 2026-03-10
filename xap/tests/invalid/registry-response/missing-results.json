@@ -1,0 +1,7 @@
+{
+  "query_id": "qry_a1b2c3d4",
+  "total_count": 1,
+  "pagination": {"has_more": false, "limit": 20},
+  "responded_at": "2026-03-10T09:15:32Z",
+  "xap_version": "0.2.0"
+}

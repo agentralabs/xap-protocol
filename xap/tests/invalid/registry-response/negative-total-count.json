@@ -1,0 +1,8 @@
+{
+  "query_id": "qry_a1b2c3d4",
+  "results": [{"agent_id": "agent_2d8e5f1a", "capabilities_matched": [{"name": "text_summarization", "version": "1.0.0", "pricing": {"model": "fixed", "amount_minor_units": 300, "currency": "USD", "per": "request"}, "sla": {"max_latency_ms": 2000, "availability_bps": 9950}}], "reputation_summary": {"success_rate_bps": 9700, "total_settlements": 14823, "dispute_rate_bps": 81, "avg_quality_score_bps": 9100}, "status": "active", "relevance_score_bps": 9450, "registered_at": "2026-01-15T08:30:00Z"}],
+  "total_count": -1,
+  "pagination": {"has_more": false, "limit": 20},
+  "responded_at": "2026-03-10T09:15:32Z",
+  "xap_version": "0.2.0"
+}

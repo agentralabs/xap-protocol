@@ -1,0 +1,5 @@
+{
+  "query_id": "qry_a1b2c3d4",
+  "filters": {"capability": {"name": "text_summarization"}},
+  "xap_version": "0.2.0"
+}

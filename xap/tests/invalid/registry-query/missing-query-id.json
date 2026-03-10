@@ -1,0 +1,5 @@
+{
+  "querying_agent_id": "agent_7f3a9b2c",
+  "filters": {"capability": {"name": "text_summarization"}},
+  "xap_version": "0.2.0"
+}
