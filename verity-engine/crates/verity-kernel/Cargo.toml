@@ -1,0 +1,16 @@
+[package]
+name = "verity-kernel"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Canonical types for the Verity truth engine"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+rand.workspace = true
+thiserror.workspace = true
+chrono.workspace = true
+hex.workspace = true
