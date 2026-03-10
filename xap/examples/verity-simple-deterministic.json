@@ -1,0 +1,85 @@
+{
+  "verity_id": "vrt_a1b2c3d4",
+  "settlement_id": "stl_4b7c9e2f",
+  "receipt_id": "rcpt_6d1e8f3a",
+  "decision_type": "condition_verification",
+  "decision_timestamp": "2026-03-15T14:30:28Z",
+  "input_state": {
+    "settlement_state": "PENDING_VERIFICATION",
+    "contract_terms": {
+      "pricing": { "amount_minor_units": 500, "currency": "USD" },
+      "sla": { "max_latency_ms": 5000, "min_quality_score_bps": 8500 },
+      "conditions": [
+        { "condition_id": "cond_a1b2", "type": "deterministic", "check": "http_status_200", "required": true }
+      ]
+    },
+    "agent_states": [
+      { "agent_id": "agent_2d8e5f1a", "role": "primary_executor" },
+      { "agent_id": "agent_7f3a9b2c", "role": "payer" }
+    ],
+    "condition_values": [
+      {
+        "condition_id": "cond_a1b2",
+        "measured_value": 200,
+        "measurement_source": "engine_http_check",
+        "measurement_timestamp": "2026-03-15T14:30:27Z"
+      }
+    ],
+    "elapsed_ms": 24000
+  },
+  "rules_applied": {
+    "rules_version": "0.2.0",
+    "rules_hash": "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+    "applicable_rules": [
+      {
+        "rule_id": "cond_check_deterministic",
+        "rule_description": "Deterministic condition passes if measured value equals expected value",
+        "evaluated": true,
+        "result": "pass"
+      },
+      {
+        "rule_id": "all_required_conditions",
+        "rule_description": "Settlement succeeds if all required conditions pass",
+        "evaluated": true,
+        "result": "pass"
+      }
+    ]
+  },
+  "computation": {
+    "steps": [
+      {
+        "step_number": 1,
+        "operation": "evaluate_condition",
+        "inputs": { "condition_id": "cond_a1b2", "measured_value": 200, "expected": "http_status_200" },
+        "rule_applied": "cond_check_deterministic",
+        "output": { "passed": true },
+        "deterministic": true
+      },
+      {
+        "step_number": 2,
+        "operation": "evaluate_all_required",
+        "inputs": { "required_conditions": ["cond_a1b2"], "results": [true] },
+        "rule_applied": "all_required_conditions",
+        "output": { "all_passed": true, "settlement_decision": "release_funds" },
+        "deterministic": true
+      }
+    ],
+    "total_steps": 2,
+    "computation_duration_ms": 3
+  },
+  "outcome": {
+    "decision": "release_funds",
+    "settlement_state_after": "SETTLED",
+    "outcome_classification": "SUCCESS",
+    "amounts_affected": [
+      { "agent_id": "agent_2d8e5f1a", "amount_minor_units": 500, "direction": "credit" },
+      { "agent_id": "agent_7f3a9b2c", "amount_minor_units": 500, "direction": "debit" }
+    ]
+  },
+  "replay_hash": "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "confidence_bps": 10000,
+  "chain_position": 1,
+  "xap_version": "0.2.0",
+  "verity_engine_version": "0.2.0",
+  "verity_signature": "ed25519:dmVyaXR5X3NpbXBsZV9zaWduYXR1cmU="
+}

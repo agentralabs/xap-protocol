@@ -29,6 +29,10 @@ SCHEMA_EXAMPLE_MAP = {
         "receipt-simple-settled.json",
         "receipt-partial-split.json",
     ],
+    "verity-receipt.json": [
+        "verity-simple-deterministic.json",
+        "verity-complex-partial.json",
+    ],
 }
 
 

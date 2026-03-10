@@ -1,0 +1,134 @@
+{
+  "verity_id": "vrt_e5f6a7b8",
+  "settlement_id": "stl_d8e9f0a1",
+  "decision_type": "condition_verification",
+  "decision_timestamp": "2026-03-15T14:36:12Z",
+  "input_state": {
+    "settlement_state": "PENDING_VERIFICATION",
+    "contract_terms": {
+      "pricing": { "amount_minor_units": 10000, "currency": "USD" },
+      "sla": { "max_latency_ms": 10000, "min_quality_score_bps": 9000 },
+      "conditions": [
+        { "condition_id": "cond_c1d2", "type": "deterministic", "check": "output_delivered", "required": true },
+        { "condition_id": "cond_e3f4", "type": "probabilistic", "check": "quality_score", "operator": "gte", "threshold": 8500, "required": false, "weight_bps": 6000 },
+        { "condition_id": "cond_a5b6", "type": "probabilistic", "check": "latency_ms", "operator": "lte", "threshold": 5000, "required": false, "weight_bps": 4000 }
+      ]
+    },
+    "agent_states": [
+      { "agent_id": "agent_2d8e5f1a", "role": "primary_executor", "reputation_at_decision": { "success_rate_bps": 9700, "total_settlements": 14823 } },
+      { "agent_id": "agent_9c4b3e7d", "role": "data_provider" },
+      { "agent_id": "agent_00000001", "role": "platform" },
+      { "agent_id": "agent_7f3a9b2c", "role": "payer" }
+    ],
+    "condition_values": [
+      { "condition_id": "cond_c1d2", "measured_value": 1, "measurement_source": "engine_delivery_check", "measurement_timestamp": "2026-03-15T14:36:10Z" },
+      { "condition_id": "cond_e3f4", "measured_value": 8200, "measurement_source": "agent_f5a6b7c8", "measurement_timestamp": "2026-03-15T14:36:12Z" },
+      { "condition_id": "cond_a5b6", "measured_value": 3200, "measurement_source": "engine_latency_check", "measurement_timestamp": "2026-03-15T14:36:10Z" }
+    ],
+    "elapsed_ms": 63000
+  },
+  "rules_applied": {
+    "rules_version": "0.2.0",
+    "rules_hash": "sha256:9876543210abcdef9876543210abcdef9876543210abcdef9876543210abcdef",
+    "applicable_rules": [
+      { "rule_id": "cond_check_deterministic", "rule_description": "Deterministic check: output_delivered", "evaluated": true, "result": "pass" },
+      { "rule_id": "cond_check_probabilistic_quality", "rule_description": "Probabilistic check: quality_score >= 8500", "evaluated": true, "result": "fail" },
+      { "rule_id": "cond_check_probabilistic_latency", "rule_description": "Probabilistic check: latency_ms <= 5000", "evaluated": true, "result": "pass" },
+      { "rule_id": "all_required_conditions", "rule_description": "All required conditions must pass", "evaluated": true, "result": "pass" },
+      { "rule_id": "weighted_optional_modifier", "rule_description": "Non-required conditions apply weighted pro-rata modifier", "evaluated": true },
+      { "rule_id": "split_calculation", "rule_description": "Apply modifier to split shares", "evaluated": true, "result": "pass" }
+    ],
+    "policy_overrides": [
+      { "source": "org", "override_description": "org_a1b2c3d4 requires chargeback_policy: orchestrator_absorbs" }
+    ]
+  },
+  "computation": {
+    "steps": [
+      {
+        "step_number": 1,
+        "operation": "evaluate_condition",
+        "inputs": { "condition_id": "cond_c1d2", "measured_value": 1, "expected": "truthy" },
+        "rule_applied": "cond_check_deterministic",
+        "output": { "passed": true },
+        "deterministic": true
+      },
+      {
+        "step_number": 2,
+        "operation": "evaluate_condition",
+        "inputs": { "condition_id": "cond_e3f4", "measured_value": 8200, "operator": "gte", "threshold": 8500 },
+        "rule_applied": "cond_check_probabilistic_quality",
+        "output": { "passed": false, "deficit_bps": 353 },
+        "deterministic": true,
+        "notes": "Quality score 8200 < threshold 8500. Condition failed. This is a weighted non-required condition."
+      },
+      {
+        "step_number": 3,
+        "operation": "evaluate_condition",
+        "inputs": { "condition_id": "cond_a5b6", "measured_value": 3200, "operator": "lte", "threshold": 5000 },
+        "rule_applied": "cond_check_probabilistic_latency",
+        "output": { "passed": true },
+        "deterministic": true
+      },
+      {
+        "step_number": 4,
+        "operation": "compute_weighted_modifier",
+        "inputs": {
+          "conditions": [
+            { "id": "cond_e3f4", "passed": false, "weight_bps": 6000, "actual_ratio_bps": 9647 },
+            { "id": "cond_a5b6", "passed": true, "weight_bps": 4000, "actual_ratio_bps": 10000 }
+          ]
+        },
+        "rule_applied": "weighted_optional_modifier",
+        "output": { "composite_modifier_bps": 9788 },
+        "deterministic": true,
+        "notes": "Weighted modifier: (6000 * 9647 + 4000 * 10000) / 10000 = 9788 bps"
+      },
+      {
+        "step_number": 5,
+        "operation": "calculate_splits",
+        "inputs": {
+          "total_minor_units": 10000,
+          "payees": [
+            { "agent_id": "agent_2d8e5f1a", "share_bps": 4000 },
+            { "agent_id": "agent_9c4b3e7d", "share_bps": 2500 },
+            { "agent_id": "agent_00000001", "share_bps": 1500 }
+          ],
+          "modifier_bps": 9788
+        },
+        "rule_applied": "split_calculation",
+        "output": {
+          "distributions": [
+            { "agent_id": "agent_2d8e5f1a", "base": 4000, "after_modifier": 3915 },
+            { "agent_id": "agent_9c4b3e7d", "base": 2500, "after_modifier": 2447 },
+            { "agent_id": "agent_00000001", "base": 1500, "after_modifier": 1500 }
+          ],
+          "total_distributed": 7862,
+          "refund_to_payer": 2138
+        },
+        "deterministic": true
+      }
+    ],
+    "total_steps": 5,
+    "computation_duration_ms": 15
+  },
+  "outcome": {
+    "decision": "partial_release_with_modifier",
+    "settlement_state_after": "PARTIAL",
+    "outcome_classification": "PARTIAL",
+    "amounts_affected": [
+      { "agent_id": "agent_2d8e5f1a", "amount_minor_units": 3915, "direction": "credit" },
+      { "agent_id": "agent_9c4b3e7d", "amount_minor_units": 2447, "direction": "credit" },
+      { "agent_id": "agent_00000001", "amount_minor_units": 1500, "direction": "credit" },
+      { "agent_id": "agent_7f3a9b2c", "amount_minor_units": 2138, "direction": "credit" }
+    ],
+    "reputation_effects": [
+      { "agent_id": "agent_2d8e5f1a", "effect": "negative", "reason": "quality_below_sla" }
+    ]
+  },
+  "replay_hash": "sha256:abcdef567890abcdef1234567890abcdef1234567890abcdef567890abcdef12",
+  "confidence_bps": 9500,
+  "chain_position": 1,
+  "xap_version": "0.2.0",
+  "verity_engine_version": "0.2.0",
+  "verity_signature": "ed25519:dmVyaXR5X2NvbXBsZXhfc2lnbmF0dXJl"
+}

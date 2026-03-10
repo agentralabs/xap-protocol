@@ -1,44 +1,430 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://xap.agentralabs.tech/schemas/v0.1/verity-receipt.json",
+  "$id": "https://xap.agentralabs.tech/schemas/v0.2/verity-receipt.json",
   "title": "VerityReceipt",
-  "description": "XAP v0.1 — In progress. Placeholder schema for deterministic decision provenance and replay.",
+  "description": "XAP v0.2 — Deterministic decision provenance and replay. The truth engine primitive.",
   "type": "object",
   "required": [
-    "xap_version",
     "verity_id",
+    "settlement_id",
     "decision_type",
-    "created_at",
-    "decision_signature"
+    "decision_timestamp",
+    "input_state",
+    "rules_applied",
+    "computation",
+    "outcome",
+    "replay_hash",
+    "confidence_bps",
+    "chain_position",
+    "xap_version",
+    "verity_engine_version",
+    "verity_signature"
   ],
+  "additionalProperties": false,
   "properties": {
-    "xap_version": {
-      "type": "string",
-      "const": "0.1"
-    },
     "verity_id": {
       "type": "string",
-      "description": "Globally unique VerityReceipt identifier."
+      "pattern": "^vrt_[a-f0-9]{8}$",
+      "description": "Unique Verity receipt identifier."
+    },
+    "settlement_id": {
+      "type": "string",
+      "pattern": "^stl_[a-f0-9]{8}$",
+      "description": "The settlement this decision belongs to."
+    },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^rcpt_[a-f0-9]{8}$",
+      "description": "The ExecutionReceipt that references this Verity (linked after receipt issuance)."
     },
     "decision_type": {
       "type": "string",
-      "description": "Type of decision captured for replay."
+      "enum": [
+        "condition_verification",
+        "split_calculation",
+        "timeout_resolution",
+        "dispute_initiation",
+        "dispute_resolution",
+        "reversal_execution",
+        "reputation_update"
+      ],
+      "description": "What kind of decision this records."
     },
-    "input_state_hash": {
+    "decision_timestamp": {
       "type": "string",
-      "description": "Hash of the decision input state."
+      "format": "date-time",
+      "description": "Exact moment the decision was made (ISO 8601)."
     },
-    "decision_trace": {
+    "input_state": {
+      "$ref": "#/$defs/InputState"
+    },
+    "rules_applied": {
+      "$ref": "#/$defs/RulesApplied"
+    },
+    "computation": {
+      "$ref": "#/$defs/Computation"
+    },
+    "outcome": {
+      "$ref": "#/$defs/Outcome"
+    },
+    "replay_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "SHA-256 hash of (input_state + rules_applied + computation). Any party can recompute to verify integrity."
+    },
+    "confidence_bps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "How deterministic the decision was. 10000 = fully deterministic. Below 10000 = some probabilistic element."
+    },
+    "chain_previous_verity_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "Hash of the previous VerityReceipt in this settlement's verity chain."
+    },
+    "chain_position": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Position in this settlement's verity chain."
+    },
+    "xap_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Protocol version (semver)."
+    },
+    "verity_engine_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Engine version that produced this decision (semver)."
+    },
+    "verity_signature": {
+      "type": "string",
+      "pattern": "^ed25519:.+$",
+      "description": "Engine's Ed25519 signature attesting to this capture."
+    }
+  },
+  "$defs": {
+    "InputState": {
       "type": "object",
-      "description": "Reasoning and policy trace used to make the decision."
+      "required": ["settlement_state", "contract_terms", "agent_states"],
+      "additionalProperties": false,
+      "description": "Complete inputs available at decision time.",
+      "properties": {
+        "settlement_state": {
+          "type": "string",
+          "description": "Settlement state at decision time (from settlement state machine)."
+        },
+        "contract_terms": {
+          "type": "object",
+          "required": ["pricing", "sla", "conditions"],
+          "additionalProperties": false,
+          "properties": {
+            "pricing": {
+              "type": "object",
+              "description": "The agreed pricing."
+            },
+            "sla": {
+              "type": "object",
+              "description": "The agreed SLA."
+            },
+            "conditions": {
+              "type": "array",
+              "items": { "type": "object" },
+              "description": "The declared conditions."
+            }
+          }
+        },
+        "agent_states": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/AgentState" },
+          "description": "State of each agent involved."
+        },
+        "condition_values": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ConditionValue" },
+          "description": "Measured values for each condition (for condition_verification)."
+        },
+        "elapsed_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Time elapsed since execution started (for timeout decisions)."
+        },
+        "dispute_evidence": {
+          "$ref": "#/$defs/DisputeEvidence"
+        }
+      }
     },
-    "created_at": {
-      "type": "string",
-      "format": "date-time"
+    "AgentState": {
+      "type": "object",
+      "required": ["agent_id", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "description": "Agent identifier."
+        },
+        "role": {
+          "type": "string",
+          "description": "Agent's role in this settlement."
+        },
+        "reputation_at_decision": {
+          "type": "object",
+          "description": "Agent's reputation snapshot at decision time."
+        }
+      }
     },
-    "decision_signature": {
-      "type": "string",
-      "description": "Ed25519 signature over canonical decision payload."
+    "ConditionValue": {
+      "type": "object",
+      "required": ["condition_id"],
+      "additionalProperties": false,
+      "properties": {
+        "condition_id": {
+          "type": "string",
+          "description": "Which condition."
+        },
+        "measured_value": {
+          "type": "integer",
+          "description": "What was actually measured."
+        },
+        "measurement_source": {
+          "type": "string",
+          "description": "Where the measurement came from."
+        },
+        "measurement_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When measured."
+        }
+      }
+    },
+    "DisputeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Evidence submitted (for dispute decisions).",
+      "properties": {
+        "submitted_by": {
+          "type": "string",
+          "description": "Agent who submitted."
+        },
+        "evidence_type": {
+          "type": "string",
+          "description": "Type of evidence."
+        },
+        "evidence_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Hash of evidence payload."
+        }
+      }
+    },
+    "RulesApplied": {
+      "type": "object",
+      "required": ["rules_version", "rules_hash", "applicable_rules"],
+      "additionalProperties": false,
+      "description": "Which rules governed this decision.",
+      "properties": {
+        "rules_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Version of the rules set (semver)."
+        },
+        "rules_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Hash of the complete rules set (for tamper evidence)."
+        },
+        "applicable_rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ApplicableRule" },
+          "description": "Which specific rules were evaluated."
+        },
+        "policy_overrides": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PolicyOverride" },
+          "description": "Any policy overrides active."
+        }
+      }
+    },
+    "ApplicableRule": {
+      "type": "object",
+      "required": ["rule_id", "rule_description", "evaluated"],
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "description": "Unique rule identifier."
+        },
+        "rule_description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Human-readable description of what this rule does."
+        },
+        "evaluated": {
+          "type": "boolean",
+          "description": "Was this rule evaluated."
+        },
+        "result": {
+          "type": "string",
+          "enum": ["pass", "fail", "skip", "not_applicable"],
+          "description": "Rule evaluation result."
+        }
+      }
+    },
+    "PolicyOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["org", "team", "agent", "contract"],
+          "description": "Where the override came from."
+        },
+        "override_description": {
+          "type": "string",
+          "description": "What was overridden."
+        }
+      }
+    },
+    "Computation": {
+      "type": "object",
+      "required": ["steps", "total_steps", "computation_duration_ms"],
+      "additionalProperties": false,
+      "description": "Step-by-step record of how the decision was made.",
+      "properties": {
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ComputationStep" },
+          "description": "Ordered sequence of computation steps."
+        },
+        "total_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of steps."
+        },
+        "computation_duration_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "How long the computation took."
+        }
+      }
+    },
+    "ComputationStep": {
+      "type": "object",
+      "required": ["step_number", "operation", "inputs", "output", "deterministic"],
+      "additionalProperties": false,
+      "properties": {
+        "step_number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Step order."
+        },
+        "operation": {
+          "type": "string",
+          "description": "What operation was performed."
+        },
+        "inputs": {
+          "type": "object",
+          "description": "What data this step consumed."
+        },
+        "rule_applied": {
+          "type": "string",
+          "description": "Which rule governed this step."
+        },
+        "output": {
+          "type": "object",
+          "description": "What this step produced."
+        },
+        "deterministic": {
+          "type": "boolean",
+          "description": "Was this step fully deterministic."
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Optional explanation."
+        }
+      }
+    },
+    "Outcome": {
+      "type": "object",
+      "required": ["decision", "settlement_state_after", "outcome_classification"],
+      "additionalProperties": false,
+      "description": "What was decided.",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "description": "The decision that was made (e.g., release_funds, refund_full, apply_pro_rata)."
+        },
+        "settlement_state_after": {
+          "type": "string",
+          "description": "Settlement state after this decision."
+        },
+        "outcome_classification": {
+          "type": "string",
+          "enum": ["SUCCESS", "FAIL", "UNKNOWN", "DISPUTED", "REVERSED", "TIMEOUT", "PARTIAL"],
+          "description": "Verity outcome classification."
+        },
+        "amounts_affected": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AmountAffected" },
+          "description": "Any monetary amounts changed by this decision."
+        },
+        "reputation_effects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ReputationEffect" },
+          "description": "Reputation changes resulting from this decision."
+        },
+        "requires_human_review": {
+          "type": "boolean",
+          "description": "Did this decision flag for human review."
+        },
+        "human_review_reason": {
+          "type": "string",
+          "description": "Why human review was flagged."
+        }
+      }
+    },
+    "AmountAffected": {
+      "type": "object",
+      "required": ["agent_id", "amount_minor_units", "direction"],
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "description": "Which agent."
+        },
+        "amount_minor_units": {
+          "type": "integer",
+          "description": "Amount in minor units."
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["credit", "debit", "hold", "release"],
+          "description": "Direction of the amount change."
+        }
+      }
+    },
+    "ReputationEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "description": "Which agent."
+        },
+        "effect": {
+          "type": "string",
+          "description": "The effect on reputation."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Why this effect was applied."
+        }
+      }
     }
   }
 }
